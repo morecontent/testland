@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urgent Offer | Премиум предложение</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0c0c0c 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            padding: 30px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #8B5CF6, #3B82F6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 0 80px;
+        }
+        
+        .offer-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 46px;
+            letter-spacing: 1.5px;
+            text-align: center;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .video-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 50px;
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* Соотношение 16:9 */
+            height: 0;
+            background: #000;
+        }
+        
+        #videoPlayer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(10, 10, 10, 0.9);
+            z-index: 10;
+            transition: opacity 0.5s ease;
+        }
+        
+        .video-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .play-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #8B5CF6, #3B82F6);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .play-icon:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 30px rgba(139, 92, 246, 0.5);
+        }
+        
+        .play-icon svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+            margin-left: 5px;
+        }
+        
+        .overlay-text {
+            font-size: 20px;
+            font-weight: 500;
+            color: #f0f0f0;
+            text-align: center;
+            max-width: 80%;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        .ad-loading {
+            display: none;
+            color: #8B5CF6;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        
+        .ad-loading.active {
+            display: block;
+        }
+        
+        .ad-loading::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 18px 45px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #8B5CF6, #3B82F6);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(139, 92, 246, 0.4);
+        }
+        
+        .cta-button:active {
+            transform: translateY(1px);
+        }
+        
+        .cta-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #7C3AED, #2563EB);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 50px;
+        }
+        
+        .cta-button:hover::after {
+            opacity: 1;
+        }
+        
+        .ad-info {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 15px;
+            text-align: center;
+            max-width: 600px;
+            line-height: 1.5;
+        }
+        
+        /* Убрал блок статуса рекламы */
+        .ad-status {
+            display: none !important;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+            width: 100%;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .feature h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #f0f0f0;
+        }
+        
+        .feature p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+        
+        footer {
+            padding: 40px 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 60px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+        
+        /* КРИТИЧЕСКИ ВАЖНЫЕ СТИЛИ ДЛЯ ОГРАНИЧЕНИЯ РЕКЛАМЫ */
+        #adContainer {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            overflow: hidden !important;
+            z-index: 100 !important;
+            background: rgba(0, 0, 0, 0.9) !important;
+            
+            /* Убрал красную рамку - только фон */
+            border: none !important;
+            box-shadow: none !important;
+        }
+        
+        /* Принудительное ограничение ВСЕХ элементов рекламы */
+        #adContainer * {
+            max-width: 100% !important;
+            max-height: 100% !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* Особенно для iframe рекламы */
+        #adContainer iframe {
+            width: 100% !important;
+            height: 100% !important;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            border: none !important;
+            overflow: hidden !important;
+        }
+        
+        /* Для видео элементов внутри рекламы */
+        #adContainer video {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: contain !important;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+        }
+        
+        /* Для div элементов рекламы */
+        #adContainer > div {
+            width: 100% !important;
+            height: 100% !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        
+        /* Для кнопки пропуска - делаем ее видимой */
+        .videoAdUiSkipButton {
+            z-index: 1000 !important;
+            background: rgba(0, 0, 0, 0.7) !important;
+            border: 1px solid #fff !important;
+            color: white !important;
+            font-size: 14px !important;
+            padding: 8px 16px !important;
+            border-radius: 4px !important;
+            bottom: 20px !important;
+            right: 20px !important;
+        }
+        
+        .videoAdUiSkipButton:hover {
+            background: rgba(0, 0, 0, 0.9) !important;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .offer-title {
+                font-size: 36px;
+            }
+            
+            .video-container {
+                border-radius: 12px;
+            }
+            
+            .play-icon {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .overlay-text {
+                font-size: 18px;
+            }
+            
+            .cta-button {
+                padding: 16px 35px;
+                font-size: 16px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            /* На мобильных уменьшаем отступы для кнопки пропуска */
+            .videoAdUiSkipButton {
+                bottom: 10px !important;
+                right: 10px !important;
+                padding: 6px 12px !important;
+                font-size: 12px !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .offer-title {
+                font-size: 28px;
+            }
+            
+            .play-icon {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .overlay-text {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">PREMIUM</div>
+        </header>
+        
+        <main class="main-content">
+            <h1 class="offer-title">Urgent Offer</h1>
+            
+            <div class="video-container">
+                <div class="video-wrapper">
+                    <div class="video-overlay" id="videoOverlay">
+                        <div class="play-icon" id="playButton">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </div>
+                        <p class="overlay-text">Нажмите для просмотра предложения. Перед основным контентом будет показана реклама.</p>
+                        <div class="ad-loading" id="adLoading">Загрузка рекламы</div>
+                    </div>
+                    
+                    <div id="videoPlayerContainer">
+                        <!-- Видео будет вставлено здесь -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Убрал блок статуса рекламы -->
+            
+            <a href="#" class="cta-button" id="actionButton">Click Here</a>
+            <p class="ad-info">Нажимая на кнопку, вы соглашаетесь с условиями предложения. Для просмотра основного видео необходимо досмотреть рекламный ролик.</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Эксклюзивный доступ</h3>
+                    <p>Только для избранных клиентов, получивших это предложение.</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2">
+                            <rect x="1" y="5" width="22" height="14" rx="2" ry="2"></rect>
+                            <line x1="1" y1="10" x2="23" y2="10"></line>
+                        </svg>
+                    </div>
+                    <h3>Высокое качество</h3>
+                    <p>Контент премиум-класса в формате высокой четкости.</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12" y2="16"></line>
+                        </svg>
+                    </div>
+                    <h3>Ограниченное время</h3>
+                    <p>Предложение действительно только в течение 24 часов с момента получения.</p>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; Все права защищены.</p>
+            <p style="margin-top: 5px;">Это предложение доступно только для совершеннолетних.</p>
+        </footer>
+    </div>
+
+    <!-- Подключаем скрипт Google IMA для работы с VAST рекламой -->
+    <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Элементы DOM
+            const playButton = document.getElementById('playButton');
+            const videoOverlay = document.getElementById('videoOverlay');
+            const videoPlayerContainer = document.getElementById('videoPlayerContainer');
+            const actionButton = document.getElementById('actionButton');
+            const adLoading = document.getElementById('adLoading');
+            
+            // URL вашего видео (замените на путь к вашему видео)
+            const videoUrl = 'video.mp4'; // Тестовое видео
+            
+            // URL тега VAST (с skipoffset=10 для пропуска после 10 сек)
+            const vastUrl = 'https://vast.vstserv.com/vast?spot_id=2015008&skipoffset=10';
+            
+            // Альтернативные тестовые VAST теги с гарантированным пропуском
+            const testVastUrls = [
+                vastUrl,
+                'https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dskippablelinear&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=&skipoffset=10',
+                'https://vast.vstserv.com/vast?spot_id=2015008&skipoffset=00:00:10'
+            ];
+            
+            let currentVastIndex = 0;
+            let player;
+            let adsManager;
+            let adDisplayContainer;
+            let adsLoader;
+            let isAdPlaying = false;
+            let resizeInterval;
+            
+            // Получение точных размеров контейнера
+            function getContainerSize() {
+                const rect = videoPlayerContainer.getBoundingClientRect();
+                const width = Math.floor(rect.width);
+                const height = Math.floor(rect.height);
+                return { width, height };
+            }
+            
+            // Принудительное ограничение размера рекламного контейнера
+            function forceAdContainerSize() {
+                const adContainer = document.getElementById('adContainer');
+                if (!adContainer) return;
+                
+                const { width, height } = getContainerSize();
+                
+                // ЖЕСТКОЕ ограничение размеров
+                adContainer.style.width = width + 'px';
+                adContainer.style.height = height + 'px';
+                adContainer.style.maxWidth = width + 'px';
+                adContainer.style.maxHeight = height + 'px';
+                adContainer.style.left = '0';
+                adContainer.style.top = '0';
+                
+                // Принудительное масштабирование содержимого
+                const iframes = adContainer.querySelectorAll('iframe');
+                const videos = adContainer.querySelectorAll('video');
+                
+                // Обрабатываем iframe
+                iframes.forEach(iframe => {
+                    iframe.style.width = '100%';
+                    iframe.style.height = '100%';
+                    iframe.style.maxWidth = '100%';
+                    iframe.style.maxHeight = '100%';
+                    iframe.style.position = 'absolute';
+                    iframe.style.top = '50%';
+                    iframe.style.left = '50%';
+                    iframe.style.transform = 'translate(-50%, -50%)';
+                });
+                
+                // Обрабатываем video
+                videos.forEach(video => {
+                    video.style.width = '100%';
+                    video.style.height = '100%';
+                    video.style.maxWidth = '100%';
+                    video.style.maxHeight = '100%';
+                    video.style.objectFit = 'contain';
+                    video.style.position = 'absolute';
+                    video.style.top = '50%';
+                    video.style.left = '50%';
+                    video.style.transform = 'translate(-50%, -50%)';
+                });
+                
+                return { width, height };
+            }
+            
+            // Мониторинг и исправление размера рекламы
+            function startSizeMonitoring() {
+                if (resizeInterval) clearInterval(resizeInterval);
+                
+                resizeInterval = setInterval(() => {
+                    if (isAdPlaying) {
+                        forceAdContainerSize();
+                        
+                        // Также форсируем resize через IMA API
+                        if (adsManager) {
+                            try {
+                                const { width, height } = getContainerSize();
+                                adsManager.resize(width, height, google.ima.ViewMode.NORMAL);
+                            } catch (e) {
+                                // Тихий fail
+                            }
+                        }
+                    }
+                }, 100); // Проверяем каждые 100мс
+            }
+            
+            // Функция инициализации видеоплеера
+            function initPlayer() {
+                // Создаем video элемент
+                const videoElement = document.createElement('video');
+                videoElement.id = 'contentVideo';
+                videoElement.controls = true;
+                videoElement.style.width = '100%';
+                videoElement.style.height = '100%';
+                videoElement.style.objectFit = 'contain';
+                videoElement.preload = 'auto';
+                
+                // Создаем источник для видео
+                const sourceElement = document.createElement('source');
+                sourceElement.src = videoUrl;
+                sourceElement.type = 'video/mp4';
+                
+                // Добавляем fallback текст
+                videoElement.innerHTML = 'Ваш браузер не поддерживает видео тег.';
+                
+                videoElement.appendChild(sourceElement);
+                videoPlayerContainer.appendChild(videoElement);
+                
+                player = videoElement;
+                
+                // Инициализация рекламы
+                initAdManager();
+                
+                // Событие окончания видео
+                player.addEventListener('ended', function() {
+                    // Можно добавить какое-то действие после завершения видео
+                });
+            }
+            
+            // Функция инициализации менеджера рекламы
+            function initAdManager() {
+                // Создаем контейнер для рекламы
+                const adContainer = document.createElement('div');
+                adContainer.id = 'adContainer';
+                adContainer.style.position = 'absolute';
+                adContainer.style.top = '0';
+                adContainer.style.left = '0';
+                adContainer.style.width = '100%';
+                adContainer.style.height = '100%';
+                adContainer.style.overflow = 'hidden';
+                adContainer.style.zIndex = '100';
+                adContainer.style.display = 'none';
+                videoPlayerContainer.appendChild(adContainer);
+                
+                // Инициализация IMA
+                try {
+                    adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, player);
+                    adsLoader = new google.ima.AdsLoader(adDisplayContainer);
+                    
+                    // Обработчики событий для загрузчика рекламы
+                    adsLoader.addEventListener(
+                        google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+                        onAdsManagerLoaded
+                    );
+                    
+                    adsLoader.addEventListener(
+                        google.ima.AdErrorEvent.Type.AD_ERROR,
+                        onAdError
+                    );
+                    
+                } catch (error) {
+                    console.error('Ошибка инициализации IMA:', error);
+                    // В случае ошибки сразу воспроизводим контент
+                    setTimeout(playContent, 1000);
+                }
+            }
+            
+            // Функция запроса рекламы
+            function requestAds(vastUrlToUse) {
+                if (!adsLoader) {
+                    setTimeout(playContent, 1000);
+                    return;
+                }
+                
+                const { width, height } = getContainerSize();
+                
+                const adsRequest = new google.ima.AdsRequest();
+                adsRequest.adTagUrl = vastUrlToUse;
+                
+                // Указываем точные размеры видео
+                adsRequest.linearAdSlotWidth = width;
+                adsRequest.linearAdSlotHeight = height;
+                
+                // Важные настройки для пропускаемой рекламы
+                adsRequest.setAdWillPlayMuted(false);
+                adsRequest.forceNonLinearFullSlot = false;
+                
+                try {
+                    adsLoader.requestAds(adsRequest);
+                } catch (error) {
+                    console.error('Ошибка запроса рекламы:', error);
+                    tryNextVastUrl();
+                }
+            }
+            
+            // Попробовать следующий VAST URL
+            function tryNextVastUrl() {
+                currentVastIndex++;
+                if (currentVastIndex < testVastUrls.length) {
+                    setTimeout(() => requestAds(testVastUrls[currentVastIndex]), 1000);
+                } else {
+                    setTimeout(playContent, 2000);
+                }
+            }
+            
+            // Обработчик загрузки менеджера рекламы
+            function onAdsManagerLoaded(event) {
+                const adsRenderingSettings = new google.ima.AdsRenderingSettings();
+                adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
+                adsRenderingSettings.enablePreloading = true;
+                
+                // Критически важные настройки для пропускаемой рекламы
+                adsRenderingSettings.uiElements = [
+                    google.ima.UiElements.AD_ATTRIBUTION,
+                    google.ima.UiElements.COUNTDOWN
+                ];
+                
+                const { width, height } = getContainerSize();
+                
+                try {
+                    adsManager = event.getAdsManager(player, adsRenderingSettings);
+                    
+                    // Устанавливаем объем и настройки
+                    adsManager.setVolume(1);
+                    
+                    // Обработчики событий для менеджера рекламы
+                    adsManager.addEventListener(
+                        google.ima.AdErrorEvent.Type.AD_ERROR,
+                        onAdError
+                    );
+                    
+                    adsManager.addEventListener(
+                        google.ima.AdEvent.Type.LOADED,
+                        onAdLoaded
+                    );
+                    
+                    adsManager.addEventListener(
+                        google.ima.AdEvent.Type.STARTED,
+                        onAdStarted
+                    );
+                    
+                    adsManager.addEventListener(
+                        google.ima.AdEvent.Type.COMPLETE,
+                        onAdComplete
+                    );
+                    
+                    adsManager.addEventListener(
+                        google.ima.AdEvent.Type.SKIPPED,
+                        onAdSkipped
+                    );
+                    
+                    adsManager.addEventListener(
+                        google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
+                        onContentPauseRequested
+                    );
+                    
+                    adsManager.addEventListener(
+                        google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED,
+                        onContentResumeRequested
+                    );
+                    
+                    adsManager.addEventListener(
+                        google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
+                        onAllAdsCompleted
+                    );
+                    
+                    // Запускаем рекламу
+                    startAds();
+                    
+                } catch (error) {
+                    console.error('Ошибка создания AdsManager:', error);
+                    tryNextVastUrl();
+                }
+            }
+            
+            // Реклама загружена
+            function onAdLoaded(event) {
+                // Тихий обработчик
+            }
+            
+            // Реклама началась
+            function onAdStarted() {
+                adLoading.classList.remove('active');
+                isAdPlaying = true;
+                
+                // Запускаем мониторинг размера
+                startSizeMonitoring();
+                
+                // Принудительно устанавливаем размеры
+                setTimeout(forceAdContainerSize, 100);
+                setTimeout(forceAdContainerSize, 500);
+                
+                // Улучшаем видимость кнопки пропуска
+                setTimeout(() => {
+                    const skipButtons = document.querySelectorAll('.videoAdUiSkipButton, .skip-button, [class*="skip"]');
+                    skipButtons.forEach(btn => {
+                        btn.style.zIndex = '9999';
+                        btn.style.background = 'rgba(0,0,0,0.8)';
+                        btn.style.color = 'white';
+                        btn.style.border = '1px solid white';
+                        btn.style.padding = '10px 20px';
+                        btn.style.fontSize = '16px';
+                        btn.style.borderRadius = '5px';
+                    });
+                }, 1500);
+            }
+            
+            // Реклама пропущена
+            function onAdSkipped() {
+                isAdPlaying = false;
+                if (resizeInterval) clearInterval(resizeInterval);
+            }
+            
+            // Реклама завершена
+            function onAdComplete() {
+                isAdPlaying = false;
+                if (resizeInterval) clearInterval(resizeInterval);
+            }
+            
+            // Обработчик ошибок рекламы
+            function onAdError(event) {
+                isAdPlaying = false;
+                if (resizeInterval) clearInterval(resizeInterval);
+                
+                // Если ошибка, пробуем следующий VAST URL или воспроизводим контент
+                if (currentVastIndex < testVastUrls.length - 1) {
+                    tryNextVastUrl();
+                } else {
+                    setTimeout(playContent, 1000);
+                }
+            }
+            
+            // Обработчик приостановки контента для показа рекламы
+            function onContentPauseRequested() {
+                player.pause();
+                const adContainer = document.getElementById('adContainer');
+                if (adContainer) {
+                    adContainer.style.display = 'block';
+                    forceAdContainerSize();
+                }
+            }
+            
+            // Обработчик возобновления контента после рекламы
+            function onContentResumeRequested() {
+                const adContainer = document.getElementById('adContainer');
+                if (adContainer) {
+                    adContainer.style.display = 'none';
+                }
+                isAdPlaying = false;
+                if (resizeInterval) clearInterval(resizeInterval);
+                player.play();
+            }
+            
+            // Обработчик завершения всех рекламных роликов
+            function onAllAdsCompleted() {
+                const adContainer = document.getElementById('adContainer');
+                if (adContainer) {
+                    adContainer.style.display = 'none';
+                }
+                isAdPlaying = false;
+                if (resizeInterval) clearInterval(resizeInterval);
+            }
+            
+            // Функция запуска рекламы
+            function startAds() {
+                if (!adsManager) {
+                    playContent();
+                    return;
+                }
+                
+                const { width, height } = getContainerSize();
+                
+                try {
+                    // Инициализируем менеджер рекламы с правильными размерами
+                    adsManager.init(width, height, google.ima.ViewMode.NORMAL);
+                    
+                    // Настраиваем размеры рекламы
+                    adsManager.resize(width, height, google.ima.ViewMode.NORMAL);
+                    
+                    // Запускаем рекламу
+                    adsManager.start();
+                    
+                } catch (error) {
+                    console.error('Ошибка при запуске рекламы:', error);
+                    playContent();
+                }
+            }
+            
+            // Функция воспроизведения основного видео
+            function playContent() {
+                // Останавливаем мониторинг
+                if (resizeInterval) {
+                    clearInterval(resizeInterval);
+                    resizeInterval = null;
+                }
+                
+                // Скрываем контейнер рекламы если он отображается
+                const adContainer = document.getElementById('adContainer');
+                if (adContainer) {
+                    adContainer.style.display = 'none';
+                }
+                
+                isAdPlaying = false;
+                
+                if (player) {
+                    player.play().catch(error => {
+                        console.error('Ошибка воспроизведения видео:', error);
+                    });
+                }
+            }
+            
+            // Обработчик изменения размера окна
+            function handleResize() {
+                if (isAdPlaying) {
+                    forceAdContainerSize();
+                    
+                    if (adsManager) {
+                        try {
+                            const { width, height } = getContainerSize();
+                            adsManager.resize(width, height, google.ima.ViewMode.NORMAL);
+                        } catch (error) {
+                            // Тихий fail
+                        }
+                    }
+                }
+            }
+            
+            // Основная функция запуска видео с рекламой
+            function startVideoWithAds() {
+                // Скрываем оверлей
+                videoOverlay.classList.add('hidden');
+                adLoading.classList.add('active');
+                
+                // Инициализируем плеер, если еще не инициализирован
+                if (!player) {
+                    initPlayer();
+                }
+                
+                // Инициализируем контейнер рекламы
+                if (adDisplayContainer) {
+                    adDisplayContainer.initialize();
+                    
+                    // Ждем инициализации и запрашиваем рекламу
+                    setTimeout(() => {
+                        requestAds(testVastUrls[currentVastIndex]);
+                    }, 500);
+                } else {
+                    setTimeout(playContent, 1000);
+                }
+            }
+            
+            // Обработчик клика на кнопку воспроизведения
+            playButton.addEventListener('click', startVideoWithAds);
+            
+            // Обработчик клика на основную кнопку CTA
+            actionButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Прокручиваем к видео
+                document.querySelector('.video-container').scrollIntoView({
+                    behavior: 'smooth'
+                });
+                
+                // Если видео еще не запущено, запускаем его
+                if (videoOverlay && !videoOverlay.classList.contains('hidden')) {
+                    startVideoWithAds();
+                }
+            });
+            
+            // Обработчик изменения размера окна
+            window.addEventListener('resize', handleResize);
+            window.addEventListener('orientationchange', handleResize);
+        });
+    </script>
+</body>
+</html>
